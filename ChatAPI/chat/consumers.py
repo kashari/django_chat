@@ -11,13 +11,13 @@ from .serializers import MessageSerializer
 
 
 class ChatConsumer(WebsocketConsumer):
+    
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.room_group_name = None
         self.room_name = None
 
     def connect(self):
-        print("here")
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
 
@@ -27,10 +27,7 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
-
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -38,9 +35,7 @@ class ChatConsumer(WebsocketConsumer):
         chat_type = {"type": "chat_message"}
         return_dict = {**chat_type, **text_data_json}
         async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            return_dict,
-        )
+            self.room_group_name, return_dict,)
 
     def chat_message(self, event):
         text_data_json = event.copy()

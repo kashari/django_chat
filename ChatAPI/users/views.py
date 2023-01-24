@@ -22,7 +22,7 @@ def create_user(self, request):
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
-def list_users():
+def list_users(request):
     """List all the app users."""
     users = User.objects.all().order_by('username')
     serializer = UserSerializer(instance=users, many=True)
