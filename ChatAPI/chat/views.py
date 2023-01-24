@@ -11,7 +11,7 @@ from rest_framework import permissions
 # Create your views here.
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def start_convo(request, ):
+def start_convo(request,):
     data = request.data
     username = data.pop('username')
     try:

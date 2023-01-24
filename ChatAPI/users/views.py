@@ -10,19 +10,19 @@ from .serializers import UserSerializer
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-def create_user(self, request):
+def create_user(request):
     """Create a new user for this app, then user is eligible for authentication."""
-    serializer = self.get_serializer(data=request.data)
+    serializer = UserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
     user.set_password(user.password)
     user.save()
-    return Response(status=status.HTTP_201_CREATED)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
-def list_users(request):
+def list_users():
     """List all the app users."""
     users = User.objects.all().order_by('username')
     serializer = UserSerializer(instance=users, many=True)

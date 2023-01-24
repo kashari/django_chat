@@ -22,6 +22,7 @@ class TokenAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
         headers = dict(scope['headers'])
+        print(scope)
         if b'authorization' in headers:
             token_name, token_key = headers[b'authorization'].decode().split()
             if token_name == 'Bearer':
