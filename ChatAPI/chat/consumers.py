@@ -3,21 +3,15 @@ import json
 import secrets
 
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebSocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from django.core.files.base import ContentFile
 
 from .models import Message, Conversation
 from .serializers import MessageSerializer
 
 
-class ChatConsumer(WebSocketConsumer):
-
-    def __init__(self):
-        self.room_group_name = None
-        self.room_name = None
-
+class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        print(self.scope)
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
 
