@@ -11,7 +11,9 @@ After installing docker engine use the two following commands to set up a docker
  2. to start the ASGI server run `daphne ChatAPI.asgi:application --port 8001`
 
 ### That is all required to have the async chat server up and running to connect via websockets 
-[ws://localhost:8001/ws/chat/1/](ws://localhost:8001/ws/chat/1/)
+
+Via URL: [ASGI URL](ws://localhost:8001/ws/chat/1/).
+
 The required payload for this is a json format as follows: 
 ```
     {
