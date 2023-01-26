@@ -1,8 +1,10 @@
+import csv
+import json
 from django.contrib.auth import authenticate
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from .models import User
 from .serializers import UserSerializer
@@ -22,7 +24,7 @@ def create_user(request):
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
-def list_users():
+def list_users(request):
     """List all the app users."""
     users = User.objects.all().order_by('username')
     serializer = UserSerializer(instance=users, many=True)
@@ -51,3 +53,34 @@ def logout(request):
     token = RefreshToken(old_token)
     token.blacklist()
     return Response("Successful Logout", status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def update_profile(request):
+    headers = request.headers
+    if 'Authorization' in headers:
+        token_name, token_key = headers['Authorization'].split()
+        if token_name == 'Bearer':
+            token = AccessToken(token_key)
+            print(token.payload)
+            user = User.objects.get(id=token.payload['user_id'])
+            serializer = UserSerializer(instance=user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.update(user, request.data)
+            return Response({'message': f'User {user.username} updated successfully.'})
+        return Response({'message': 'Something went wrong.'})
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def bulk_create(request):
+    file = request.FILES['file']
+    if not file:
+        return Response({'error': 'No file provided, or file not valid.'}, status=400)
+    file_data = file.read().decode('utf-8')
+    lines = file_data.split('\n')
+    reader = csv.DictReader(lines)
+    data = [User(**row) for row in reader]
+    User.objects.bulk_create(data)
+    return Response({'message': 'Users created successfully.'}, status=201)

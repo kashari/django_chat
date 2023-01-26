@@ -5,5 +5,12 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'password')
+        fields = ('id', 'email', 'username', 'password', 'bio')
         extra_kwargs = {'password': {'write_only': True}}
+
+        def update(self, instance, validated_data):
+            instance.username = validated_data['username']
+            instance.email = validated_data['email']
+            instance.bio = validated_data['bio']
+            instance.save()
+            return instance

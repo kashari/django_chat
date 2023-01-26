@@ -8,7 +8,16 @@ After installing docker engine use the two following commands to set up a docker
 
 # run the project
  1. run pip `install -r requirements.txt`
- 2. to start the ASGI server run `daphne ChatAPI.asgi:application --port 8001`
+ 2. comment out these lines in `chat/models.py`
+    ```
+    import django
+    
+    django.setup()
+    ```
+    commenting these will allow you to use the default settings and use the `migrate` command
+ 3. run `python manage.py migrate`
+ 4. undo step 2
+ 5. to start the ASGI server run `daphne ChatAPI.asgi:application --port 8001`
 
 ### That is all required to have the async chat server up and running to connect via websockets 
 
