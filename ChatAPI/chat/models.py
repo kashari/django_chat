@@ -34,10 +34,14 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     @property
-    def since_when(self):
-        since_when = datetime.datetime.now() - self.timestamp
-        match since_when:
-            case since_when if since_when.seconds < 60:
-                return since_when.seconds
-            case since_when if since_when.seconds < 3600:
-                return since_when.seconds * 60
+    def since(self):
+        now = datetime.now()
+        diff = now - self.timestamp
+        if diff.days >= 1:
+            return f"{diff.days} h"
+        elif diff.seconds >= 3600:
+            return f"{diff.seconds // 3600} h"
+        elif diff.seconds >= 60:
+            return f"{diff.seconds // 60} m"
+        else:
+            return f"{diff.seconds} s"
