@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -31,7 +30,8 @@ INSTALLED_APPS = [
 
     # local
     'users',
-    'chat'
+    'chat',
+    'notifications'
 ]
 
 SITE_ID = 1

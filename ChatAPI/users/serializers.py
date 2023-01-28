@@ -12,5 +12,5 @@ class UserSerializer(serializers.ModelSerializer):
             instance.username = validated_data['username']
             instance.email = validated_data['email']
             instance.bio = validated_data['bio']
-            instance.save()
+            instance.save(update_fields=['username', 'email', 'bio'])
             return instance

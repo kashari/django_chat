@@ -1,5 +1,4 @@
 import csv
-import json
 from django.contrib.auth import authenticate
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -63,7 +62,6 @@ def update_profile(request):
         token_name, token_key = headers['Authorization'].split()
         if token_name == 'Bearer':
             token = AccessToken(token_key)
-            print(token.payload)
             user = User.objects.get(id=token.payload['user_id'])
             serializer = UserSerializer(instance=user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)

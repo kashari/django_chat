@@ -1,7 +1,7 @@
 import django
 
 django.setup()
-import datetime
+from datetime import datetime, timezone
 from django.db import models
 from users.models import User
 
@@ -27,21 +27,21 @@ class Message(models.Model):
     class Meta:
         ordering = ('-timestamp',)
 
-
-class Notification(models.Model):
-    to = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name='notification_to')
-    message = models.TextField(blank=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
     @property
     def since(self):
-        now = datetime.now()
+        now = datetime.now(tz=timezone.utc)
         diff = now - self.timestamp
-        if diff.days >= 1:
-            return f"{diff.days} h"
+        if diff.days >= 365:
+            return f"{diff.strftime('%d %b %y')}"
+        elif diff.days >= 28:
+            return f"{diff.strftime('%d %b')}"
+        elif diff.days >= 7:
+            return f"{diff.days // 7}w ago"
+        elif diff.days >= 1:
+            return f"{diff.days}d ago"
         elif diff.seconds >= 3600:
-            return f"{diff.seconds // 3600} h"
+            return f"{diff.seconds // 3600}h ago"
         elif diff.seconds >= 60:
-            return f"{diff.seconds // 60} m"
+            return f"{diff.seconds // 60}m ago"
         else:
-            return f"{diff.seconds} s"
+            return f"{diff.seconds}s ago"
