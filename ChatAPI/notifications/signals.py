@@ -13,12 +13,11 @@ def created_or_updated_user_notification(sender, instance, created, **kwargs):
         message = "Your account was created successfully."
     else:
         message = f"Hello {instance.username}. Your account was updated successfully."
-
+        
+        notification = Notification.objects.create(to=instance, message=message)
+        
         async_to_sync(get_channel_layer().group_send)(
             f"notification_{instance.id}", {
                 "type": "user.notification",
-                "message": message
-            }
-        )
-
-    Notification.objects.create(to=instance, message=message)
+                "message": f"{message} {notification.since}"
+            })
